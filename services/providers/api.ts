@@ -429,7 +429,7 @@ export async function callOpenRouter(opts: AnalyzeOptions): Promise<ProviderResp
   messages.push({ role: 'user', content: opts.prompt });
 
   const modelId = opts.model === 'auto'
-    ? 'anthropic/claude-sonnet-4'
+    ? 'anthropic/claude-sonnet-4.6'
     : opts.model;
 
   const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {

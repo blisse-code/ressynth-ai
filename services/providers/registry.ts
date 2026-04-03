@@ -21,9 +21,24 @@ export const PROVIDER_CONFIGS: Record<ProviderID, ProviderConfig> = {
     description: 'Native video and audio analysis with massive context window. Best for raw media processing.',
     models: [
       {
-        id: 'gemini-2.5-pro-preview-06-05',
-        name: 'Gemini 2.5 Pro',
-        description: 'Most capable Gemini model. Native video/audio, 1M context.',
+        id: 'gemini-3.1-pro-preview',
+        name: 'Gemini 3.1 Pro',
+        description: 'Most capable Gemini. Advanced reasoning, native video/audio, 1M context.',
+        capabilities: {
+          nativeVideo: true,
+          nativeAudio: true,
+          maxFileSizeMB: 2048,
+          maxContextTokens: 1048576,
+          strengths: ['advanced reasoning', 'native video analysis', 'native audio analysis', 'long context', 'multimodal'],
+          accuracy: 'high',
+          speed: 'medium',
+          costPerMillionTokens: 2.00,
+        }
+      },
+      {
+        id: 'gemini-3-pro-preview',
+        name: 'Gemini 3 Pro',
+        description: 'Flagship multimodal reasoning. Native video/audio, 1M context.',
         capabilities: {
           nativeVideo: true,
           nativeAudio: true,
@@ -36,18 +51,18 @@ export const PROVIDER_CONFIGS: Record<ProviderID, ProviderConfig> = {
         }
       },
       {
-        id: 'gemini-2.0-flash',
-        name: 'Gemini 2.0 Flash',
-        description: 'Faster Gemini variant. Good for shorter recordings.',
+        id: 'gemini-2.5-pro-preview-06-05',
+        name: 'Gemini 2.5 Pro',
+        description: 'Previous gen workhorse. Native video/audio, 1M context.',
         capabilities: {
           nativeVideo: true,
           nativeAudio: true,
           maxFileSizeMB: 2048,
           maxContextTokens: 1048576,
-          strengths: ['fast multimodal', 'native video', 'native audio'],
-          accuracy: 'medium',
-          speed: 'fast',
-          costPerMillionTokens: 0.10,
+          strengths: ['native video analysis', 'native audio analysis', 'long context'],
+          accuracy: 'high',
+          speed: 'medium',
+          costPerMillionTokens: 1.25,
         }
       }
     ],
@@ -56,10 +71,10 @@ export const PROVIDER_CONFIGS: Record<ProviderID, ProviderConfig> = {
       nativeAudio: true,
       maxFileSizeMB: 2048,
       maxContextTokens: 1048576,
-      strengths: ['native video analysis', 'native audio analysis', 'long context'],
+      strengths: ['advanced reasoning', 'native video analysis', 'native audio analysis', 'long context'],
       accuracy: 'high',
       speed: 'medium',
-      costPerMillionTokens: 1.25,
+      costPerMillionTokens: 2.00,
     },
     apiKeyPlaceholder: 'AIza...',
     docsUrl: 'https://ai.google.dev/docs',
@@ -105,27 +120,57 @@ export const PROVIDER_CONFIGS: Record<ProviderID, ProviderConfig> = {
   anthropic: {
     id: 'anthropic',
     name: 'Anthropic (Claude)',
-    description: 'Exceptional reasoning and synthesis. Best supervisor model. Needs transcript for audio/video.',
+    description: 'Exceptional reasoning and synthesis. Best supervisor model. 1M context on 4.6 models.',
     models: [
       {
-        id: 'claude-sonnet-4-20250514',
-        name: 'Claude Sonnet 4',
-        description: 'Strong reasoning and analysis. Excellent for synthesis.',
+        id: 'claude-opus-4-6',
+        name: 'Claude Opus 4.6',
+        description: 'Most capable Claude. Flagship reasoning, 1M context, 128K output.',
         capabilities: {
           nativeVideo: false,
           nativeAudio: false,
           maxFileSizeMB: 0,
-          maxContextTokens: 200000,
-          strengths: ['reasoning', 'synthesis', 'structured analysis', 'nuanced writing'],
+          maxContextTokens: 1000000,
+          strengths: ['advanced reasoning', 'synthesis', 'structured analysis', 'nuanced writing', 'long context'],
+          accuracy: 'high',
+          speed: 'medium',
+          costPerMillionTokens: 5.00,
+        }
+      },
+      {
+        id: 'claude-sonnet-4-6',
+        name: 'Claude Sonnet 4.6',
+        description: 'Balanced speed and intelligence. 1M context, agentic search.',
+        capabilities: {
+          nativeVideo: false,
+          nativeAudio: false,
+          maxFileSizeMB: 0,
+          maxContextTokens: 1000000,
+          strengths: ['reasoning', 'synthesis', 'coding', 'agentic search'],
           accuracy: 'high',
           speed: 'medium',
           costPerMillionTokens: 3.00,
         }
       },
       {
-        id: 'claude-haiku-3-5-20241022',
-        name: 'Claude 3.5 Haiku',
-        description: 'Fast and capable. Good for secondary analysis.',
+        id: 'claude-sonnet-4-5-20250929',
+        name: 'Claude Sonnet 4.5',
+        description: 'Best for coding agents. Strong reasoning, 200K context.',
+        capabilities: {
+          nativeVideo: false,
+          nativeAudio: false,
+          maxFileSizeMB: 0,
+          maxContextTokens: 200000,
+          strengths: ['coding', 'agents', 'structured analysis'],
+          accuracy: 'high',
+          speed: 'medium',
+          costPerMillionTokens: 3.00,
+        }
+      },
+      {
+        id: 'claude-haiku-4-5-20251001',
+        name: 'Claude Haiku 4.5',
+        description: 'Fastest Claude. Near-frontier performance at low cost.',
         capabilities: {
           nativeVideo: false,
           nativeAudio: false,
@@ -134,7 +179,7 @@ export const PROVIDER_CONFIGS: Record<ProviderID, ProviderConfig> = {
           strengths: ['fast reasoning', 'structured output', 'cost efficient'],
           accuracy: 'medium',
           speed: 'fast',
-          costPerMillionTokens: 0.80,
+          costPerMillionTokens: 1.00,
         }
       }
     ],
@@ -142,11 +187,11 @@ export const PROVIDER_CONFIGS: Record<ProviderID, ProviderConfig> = {
       nativeVideo: false,
       nativeAudio: false,
       maxFileSizeMB: 0,
-      maxContextTokens: 200000,
-      strengths: ['reasoning', 'synthesis', 'structured analysis', 'nuanced writing'],
+      maxContextTokens: 1000000,
+      strengths: ['advanced reasoning', 'synthesis', 'structured analysis', 'nuanced writing'],
       accuracy: 'high',
       speed: 'medium',
-      costPerMillionTokens: 3.00,
+      costPerMillionTokens: 5.00,
     },
     apiKeyPlaceholder: 'sk-ant-...',
     docsUrl: 'https://docs.anthropic.com',
@@ -268,7 +313,7 @@ export const PROVIDER_CONFIGS: Record<ProviderID, ProviderConfig> = {
           nativeVideo: false,
           nativeAudio: false,
           maxFileSizeMB: 0,
-          maxContextTokens: 200000,
+          maxContextTokens: 1000000,
           strengths: ['model variety', 'fallback', 'auto routing'],
           accuracy: 'high',
           speed: 'medium',
@@ -276,33 +321,48 @@ export const PROVIDER_CONFIGS: Record<ProviderID, ProviderConfig> = {
         }
       },
       {
-        id: 'anthropic/claude-sonnet-4',
-        name: 'Claude Sonnet 4 (via OR)',
-        description: 'Claude via OpenRouter. Good fallback if direct Anthropic key exhausted.',
+        id: 'anthropic/claude-opus-4.6',
+        name: 'Claude Opus 4.6 (via OR)',
+        description: 'Most capable Claude via OpenRouter.',
         capabilities: {
           nativeVideo: false,
           nativeAudio: false,
           maxFileSizeMB: 0,
-          maxContextTokens: 200000,
+          maxContextTokens: 1000000,
           strengths: ['reasoning', 'synthesis'],
+          accuracy: 'high',
+          speed: 'medium',
+          costPerMillionTokens: 5.50,
+        }
+      },
+      {
+        id: 'anthropic/claude-sonnet-4.6',
+        name: 'Claude Sonnet 4.6 (via OR)',
+        description: 'Balanced Claude via OpenRouter.',
+        capabilities: {
+          nativeVideo: false,
+          nativeAudio: false,
+          maxFileSizeMB: 0,
+          maxContextTokens: 1000000,
+          strengths: ['reasoning', 'synthesis', 'coding'],
           accuracy: 'high',
           speed: 'medium',
           costPerMillionTokens: 3.50,
         }
       },
       {
-        id: 'google/gemini-2.5-pro-preview',
-        name: 'Gemini 2.5 Pro (via OR)',
-        description: 'Gemini via OpenRouter.',
+        id: 'google/gemini-3.1-pro-preview',
+        name: 'Gemini 3.1 Pro (via OR)',
+        description: 'Latest Gemini via OpenRouter.',
         capabilities: {
           nativeVideo: false,
           nativeAudio: false,
           maxFileSizeMB: 0,
           maxContextTokens: 1048576,
-          strengths: ['long context', 'analysis'],
+          strengths: ['long context', 'reasoning'],
           accuracy: 'high',
           speed: 'medium',
-          costPerMillionTokens: 1.50,
+          costPerMillionTokens: 2.50,
         }
       }
     ],
