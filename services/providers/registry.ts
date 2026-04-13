@@ -394,11 +394,38 @@ export const DEFAULT_FALLBACK_ORDER: ProviderID[] = [
 
 // ─── Storage keys ───
 const SETTINGS_KEY = 'ressynth_provider_settings';
+const SETTINGS_VERSION_KEY = 'ressynth_settings_version';
+const CURRENT_SETTINGS_VERSION = 3; // Bump this when models change
 
 export function loadProviderSettings(): UserProviderSettings[] {
   try {
+    const storedVersion = parseInt(localStorage.getItem(SETTINGS_VERSION_KEY) || '0');
     const stored = localStorage.getItem(SETTINGS_KEY);
-    if (stored) return JSON.parse(stored);
+
+    if (stored) {
+      let settings: UserProviderSettings[] = JSON.parse(stored);
+
+      // Migrate stale model selections when version changes
+      if (storedVersion < CURRENT_SETTINGS_VERSION) {
+        settings = settings.map(s => {
+          const config = PROVIDER_CONFIGS[s.id];
+          if (!config) return s;
+
+          // Check if the selected model still exists in current config
+          const modelExists = config.models.some(m => m.id === s.selectedModel);
+          if (!modelExists) {
+            // Reset to first (best) model for this provider
+            return { ...s, selectedModel: config.models[0].id };
+          }
+          return s;
+        });
+        // Save migrated settings + update version
+        localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+        localStorage.setItem(SETTINGS_VERSION_KEY, String(CURRENT_SETTINGS_VERSION));
+      }
+
+      return settings;
+    }
   } catch (e) {
     console.error('Failed to load provider settings:', e);
   }
@@ -408,6 +435,7 @@ export function loadProviderSettings(): UserProviderSettings[] {
 export function saveProviderSettings(settings: UserProviderSettings[]): void {
   try {
     localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+    localStorage.setItem(SETTINGS_VERSION_KEY, String(CURRENT_SETTINGS_VERSION));
   } catch (e) {
     console.error('Failed to save provider settings:', e);
   }
