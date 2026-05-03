@@ -13,12 +13,14 @@ interface SettingsModalProps {
 export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, onSave }) => {
   const [settings, setSettings] = useState<UserProviderSettings[]>([]);
   const [expandedProvider, setExpandedProvider] = useState<ProviderID | null>(null);
-  const [activeTab, setActiveTab] = useState<'providers' | 'usage'>('providers');
+  const [activeTab, setActiveTab] = useState<'providers' | 'integrations' | 'usage'>('providers');
   const [saved, setSaved] = useState(false);
+  const [googleClientId, setGoogleClientId] = useState('');
 
   useEffect(() => {
     if (isOpen) {
       const existing = loadProviderSettings();
+      setGoogleClientId(localStorage.getItem('ressynth_google_client_id') || '');
       // Ensure all providers have entries
       const allSettings: UserProviderSettings[] = DEFAULT_FALLBACK_ORDER.map((id, idx) => {
         const found = existing.find(s => s.id === id);
@@ -60,6 +62,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, o
 
   const handleSave = () => {
     saveProviderSettings(settings);
+    localStorage.setItem('ressynth_google_client_id', googleClientId.trim());
     setSaved(true);
     onSave();
     setTimeout(() => onClose(), 600);
@@ -98,6 +101,16 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, o
             AI Models
           </button>
           <button
+            onClick={() => setActiveTab('integrations')}
+            className={`flex-1 py-3 text-sm font-semibold transition-colors ${
+              activeTab === 'integrations'
+                ? 'text-orange-600 border-b-2 border-orange-500'
+                : 'text-slate-400 hover:text-slate-600'
+            }`}
+          >
+            Integrations
+          </button>
+          <button
             onClick={() => setActiveTab('usage')}
             className={`flex-1 py-3 text-sm font-semibold transition-colors ${
               activeTab === 'usage'
@@ -111,7 +124,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, o
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-5">
-          {activeTab === 'providers' ? (
+          {activeTab === 'providers' && (
             <div className="space-y-3">
               <p className="text-xs text-slate-500 mb-4 p-3 bg-slate-50 rounded-xl leading-relaxed">
                 Models are ordered by accuracy for UX analysis. The system will use the first available model, 
@@ -242,8 +255,55 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, o
                   );
                 })}
             </div>
-          ) : (
-            /* Token Usage Tab */
+          )}
+
+          {activeTab === 'integrations' && (
+            <div className="space-y-4">
+              <p className="text-xs text-slate-500 mb-2 p-3 bg-slate-50 rounded-xl leading-relaxed">
+                Optional integrations. Currently supports Google Drive for importing recordings directly from your cloud storage.
+              </p>
+
+              <div className="border border-slate-200 rounded-xl p-4 space-y-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#4285F4' }} />
+                  <h4 className="font-semibold text-sm text-slate-900">Google Drive</h4>
+                  {googleClientId.trim() && googleClientId.endsWith('.apps.googleusercontent.com') && (
+                    <span className="text-[10px] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded">Configured</span>
+                  )}
+                </div>
+                <p className="text-xs text-slate-500 leading-relaxed">
+                  Paste your Google OAuth Client ID below to enable "Import from Google Drive" on the upload screen. 
+                  The Client ID is stored only in this browser.
+                </p>
+
+                <div>
+                  <label className="text-xs font-semibold text-slate-500 mb-1.5 block">OAuth Client ID</label>
+                  <input
+                    type="text"
+                    value={googleClientId}
+                    onChange={(e) => { setGoogleClientId(e.target.value); setSaved(false); }}
+                    placeholder="123456789-xxxxxxxxxx.apps.googleusercontent.com"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm font-mono text-slate-900 placeholder-slate-400 focus:outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-500/10"
+                  />
+                </div>
+
+                <details className="text-xs text-slate-500">
+                  <summary className="cursor-pointer font-semibold text-slate-600 hover:text-slate-900">How to get a Client ID</summary>
+                  <ol className="mt-2 space-y-1.5 pl-4 list-decimal leading-relaxed">
+                    <li>Go to <a className="text-orange-600 hover:underline" href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noreferrer">console.cloud.google.com/apis/credentials</a></li>
+                    <li>Select or create a project</li>
+                    <li>Enable "Google Drive API" under APIs & Services → Library</li>
+                    <li>Configure the OAuth consent screen (External, add yourself as a test user)</li>
+                    <li>Create Credentials → OAuth Client ID → Web application</li>
+                    <li>Authorized JavaScript origins: <code className="bg-slate-100 px-1 rounded">https://resynth-six.vercel.app</code></li>
+                    <li>Copy the Client ID and paste it above. Save.</li>
+                  </ol>
+                </details>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'usage' && (
             <div className="space-y-4">
               <div className="grid grid-cols-3 gap-3">
                 <div className="p-4 bg-slate-50 rounded-xl text-center">

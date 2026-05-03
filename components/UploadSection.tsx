@@ -98,9 +98,16 @@ export const UploadSection: React.FC<UploadSectionProps> = ({
       setError("Google Identity Services not loaded. Please refresh and try again.");
       return;
     }
-    const clientId = (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_GOOGLE_CLIENT_ID || '').trim();
+    // Priority: localStorage (user-configured) > build-time env var
+    const storedClientId = (localStorage.getItem('ressynth_google_client_id') || '').trim();
+    const envClientId = (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_GOOGLE_CLIENT_ID || '').trim();
+    const clientId = storedClientId || envClientId;
     if (!clientId) {
-      setError("Google Drive requires VITE_GOOGLE_CLIENT_ID in your environment. See README for setup.");
+      setError("Google Drive Client ID not set. Open Settings (gear icon) and add your Google OAuth Client ID under 'Google Drive'.");
+      return;
+    }
+    if (!clientId.endsWith('.apps.googleusercontent.com')) {
+      setError("Invalid Google Client ID. It should end with '.apps.googleusercontent.com'. Check Settings > Google Drive.");
       return;
     }
     try {
